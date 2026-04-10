@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>itsmyscreen — Booking Summary</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:      #0F1F3D;
+    --navy-mid:  #1a3560;
+    --navy-soft: #2a4a7f;
+    --gold:      #E8A020;
+    --gold-light:#F5C355;
+    --gold-pale: #FDF3DC;
+    --red-acc:   #D94040;
+    --green:     #16a34a;
+    --green-light:#dcfce7;
+    --bg:        #F8F7F4;
+    --surface:   #FFFFFF;
+    --surface-2: #EEF0F5;
+    --ink:       #0F1F3D;
+    --ink-mid:   #4A5568;
+    --ink-faint: #94A3B8;
+    --border:    #E2E5ED;
+    --vip:       #7C3AED;
+    --premium:   #0284C7;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(248,247,244,0.93);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 60px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .logo-mark { width: 32px; height: 32px; background: var(--navy); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .logo-mark span { color: var(--gold); font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; }
+  .logo-text { font-size: 15px; font-weight: 500; color: var(--navy); }
+  .logo-text em { font-style: normal; color: var(--red-acc); }
+  .nav-center { text-align: center; }
+  .nav-event-name { font-size: 14px; font-weight: 500; color: var(--navy); }
+  .nav-event-sub { font-size: 11px; color: var(--ink-faint); margin-top: 1px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--navy); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: var(--gold); border: 2px solid var(--border); cursor: pointer; }
+
+  /* ── PROGRESS ── */
+  .progress-bar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 12px 60px; display: flex; align-items: center; gap: 0;
+  }
+  .prog-step { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .prog-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+  .prog-num.done { background: var(--navy); color: #fff; }
+  .prog-num.active { background: var(--gold); color: var(--navy); }
+  .prog-num.idle { background: var(--surface-2); color: var(--ink-faint); border: 1px solid var(--border); }
+  .prog-label.done { color: var(--ink-mid); }
+  .prog-label.active { color: var(--navy); font-weight: 500; }
+  .prog-label.idle { color: var(--ink-faint); }
+  .prog-line { flex: 1; height: 1px; background: var(--border); margin: 0 16px; max-width: 80px; }
+  .prog-line.done { background: var(--navy); }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    padding: 36px 60px 28px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px; font-weight: 700; color: var(--navy);
+    letter-spacing: -0.4px; margin-bottom: 6px;
+  }
+  .page-header p { font-size: 13px; color: var(--ink-faint); font-weight: 300; }
+
+  /* ── TWO COL LAYOUT ── */
+  .body-wrap {
+    padding: 0 60px 64px;
+    display: flex; gap: 40px; align-items: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .page-header {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline-col { flex: 1; min-width: 0; max-width: 680px; }
+
+  .tl-item {
+    display: flex; gap: 20px; align-items: flex-start;
+    animation: fadeUp 0.4s ease both;
+  }
+  .tl-item:nth-child(1) { animation-delay: 0.05s; }
+  .tl-item:nth-child(2) { animation-delay: 0.10s; }
+  .tl-item:nth-child(3) { animation-delay: 0.15s; }
+  .tl-item:nth-child(4) { animation-delay: 0.20s; }
+  .tl-item:nth-child(5) { animation-delay: 0.25s; }
+
+  .tl-spine {
+    display: flex; flex-direction: column;
+    align-items: center; flex-shrink: 0; padding-top: 3px;
+  }
+  .tl-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--navy); border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1.5px var(--navy);
+    flex-shrink: 0;
+  }
+  .tl-connector {
+    width: 1.5px; flex: 1; min-height: 52px;
+    background: linear-gradient(to bottom, var(--navy), var(--border));
+    margin: 4px 0;
+  }
+
+  .tl-content {
+    flex: 1; padding-bottom: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+  }
+  .tl-content:hover { box-shadow: 0 4px 20px rgba(15,31,61,0.07); }
+
+  .tl-step-num {
+    font-size: 10px; font-weight: 500; color: var(--ink-faint);
+    text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .tl-step-num::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .tl-step-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; font-weight: 600; color: var(--navy);
+    margin-bottom: 10px; letter-spacing: -0.2px;
+  }
+
+  /* chips */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 12px;
+    font-size: 12px; color: var(--ink-mid); font-weight: 400;
+  }
+  .chip .ci { font-size: 12px; }
+
+  /* seat badges */
+  .seat-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    border-radius: 8px; padding: 5px 12px;
+    font-size: 12px; font-weight: 500; border: 1px solid;
+  }
+  .sb-vip { background: #ede9fe; border-color: var(--vip); color: #5b21b6; }
+  .sb-premium { background: #e0f2fe; border-color: var(--premium); color: #0369a1; }
+  .sb-std { background: var(--surface-2); border-color: #94a3b8; color: #475569; }
+
+  /* mini seat map preview */
+  .mini-map {
+    margin-top: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; flex-direction: column; gap: 4px; align-items: center;
+  }
+  .mini-stage {
+    background: var(--navy); border-radius: 4px 4px 12px 12px;
+    width: 50%; padding: 4px;
+    text-align: center; font-size: 9px; color: rgba(255,255,255,0.5);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+  }
+  .mini-row { display: flex; gap: 3px; }
+  .mini-seat {
+    width: 14px; height: 11px; border-radius: 3px 3px 2px 2px;
+    border-top: 2px solid transparent;
+  }
+  .ms-vip { background: #ede9fe; border-color: var(--vip); }
+  .ms-premium { background: #e0f2fe; border-color: var(--premium); }
+  .ms-std { background: var(--surface-2); border-color: #94a3b8; }
+  .ms-booked { background: #e5e7eb; border-color: #9ca3af; }
+  .ms-selected { background: var(--green-light); border-color: var(--green); }
+
+  /* attendee */
+  .attendee-row {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+  }
+  .avatar-lg {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--navy); display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 500; color: var(--gold); flex-shrink: 0;
+  }
+  .attendee-name { font-size: 15px; font-weight: 500; color: var(--ink); }
+  .attendee-sub { font-size: 12px; color: var(--ink-faint); font-weight: 300; }
+  .edit-link {
+    margin-left: auto; font-size: 12px; color: var(--navy);
+    text-decoration: underline; cursor: pointer; opacity: 0.7;
+  }
+  .edit-link:hover { opacity: 1; }
+
+  /* ── RIGHT COL — PRICE + ACTIONS ── */
+  .right-col {
+    width: 320px; flex-shrink: 0;
+    position: sticky; top: 80px;
+    display: flex; flex-direction: column; gap: 16px;
+    animation: fadeUp 0.4s 0.2s ease both;
+  }
+
+  /* Price card */
+  .price-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  .price-card-header {
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .price-card-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 600; color: var(--navy);
+  }
+  .price-rows { padding: 6px 0; }
+  .price-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 20px; font-size: 13px;
+  }
+  .price-row .pr-label { color: var(--ink-mid); font-weight: 300; }
+  .price-row .pr-val { color: var(--ink); font-weight: 500; }
+  .price-row.faint .pr-label { color: var(--ink-faint); }
+  .price-row.faint .pr-val { color: var(--ink-faint); font-weight: 300; }
+  .price-row.discount .pr-val { color: var(--green); }
+  .price-divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .price-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 14px 20px 16px;
+    background: var(--navy); margin-top: 4px;
+  }
+  .price-total .pt-label {
+    font-size: 13px; color: rgba(255,255,255,0.6); font-weight: 300;
+  }
+  .price-total .pt-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 700; color: #fff;
+  }
+  .price-total .pt-val sup {
+    font-size: 13px; font-family: 'DM Sans', sans-serif;
+    font-weight: 400; vertical-align: super;
+  }
+
+  /* Promo code */
+  .promo-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 16px 20px;
+  }
+  .promo-label {
+    font-size: 12px; font-weight: 500; color: var(--ink-mid);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .promo-label span { font-size: 13px; }
+  .promo-input-row { display: flex; gap: 8px; }
+  .promo-input {
+    flex: 1; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 9px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--ink); background: var(--bg);
+    outline: none; transition: border-color 0.2s;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .promo-input::placeholder { text-transform: none; letter-spacing: 0; color: var(--ink-faint); }
+  .promo-input:focus { border-color: var(--gold); background: var(--surface); }
+  .btn-apply {
+    background: var(--surface-2); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 9px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--ink-mid); cursor: pointer; font-weight: 500;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .btn-apply:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .promo-success {
+    display: none; margin-top: 8px;
+    font-size: 12px; color: var(--green); font-weight: 400;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  /* Action buttons */
+  .action-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 16px 20px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .btn-confirm {
+    width: 100%; padding: 14px;
+    background: var(--navy); border: none; border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.2s;
+  }
+  .btn-confirm:hover { background: var(--navy-mid); }
+  .btn-confirm .gold-arr { color: var(--gold); font-size: 16px; }
+
+  .btn-reserve {
+    width: 100%; padding: 12px;
+    background: none; border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 400;
+    color: var(--ink-mid); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: all 0.2s;
+  }
+  .btn-reserve:hover { border-color: var(--navy); color: var(--navy); }
+
+  .btn-edit {
+    width: 100%; padding: 10px;
+    background: none; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 12px;
+    color: var(--ink-faint); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    transition: color 0.2s;
+  }
+  .btn-edit:hover { color: var(--navy); }
+
+  /* Mail note */
+  .mail-note {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--green-light);
+    border: 1px solid rgba(22,163,74,0.2);
+    border-radius: 12px; padding: 12px 14px;
+  }
+  .mail-note .mn-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .mail-note p { font-size: 12px; color: #166534; font-weight: 300; line-height: 1.6; }
+  .mail-note strong { font-weight: 500; }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    padding: 24px 60px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo { font-size: 13px; color: var(--ink-faint); }
+  .footer-logo em { font-style: normal; color: var(--red-acc); }
+  .footer-note { font-size: 11px; color: var(--ink-faint); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-mark"><span>i</span></div>
+    <span class="logo-text">its<em>my</em>screen</span>
+  </a>
+  <div class="nav-center">
+    <div class="nav-event-name">Echoes of the Night — Live Concert</div>
+    <div class="nav-event-sub">Palace Grounds, Mysuru · Sat, 12 Apr 2025</div>
+  </div>
+  <div class="avatar">D</div>
+</nav>
+
+<!-- ── PROGRESS ── -->
+<div class="progress-bar">
+  <div class="prog-step">
+    <div class="prog-num done">✓</div>
+    <span class="prog-label done">Event chosen</span>
+  </div>
+  <div class="prog-line done"></div>
+  <div class="prog-step">
+    <div class="prog-num done">✓</div>
+    <span class="prog-label done">Timing & seats</span>
+  </div>
+  <div class="prog-line done"></div>
+  <div class="prog-step">
+    <div class="prog-num active">3</div>
+    <span class="prog-label active">Summary & payment</span>
+  </div>
+</div>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <h1>Your booking at a glance</h1>
+  <p>Review every detail below before confirming your order.</p>
+</div>
+
+<!-- ── BODY ── -->
+<div class="body-wrap">
+
+  <!-- TIMELINE -->
+  <div class="timeline-col">
+
+    <!-- Step 1 — Event -->
+    <div class="tl-item">
+      <div class="tl-spine">
+        <div class="tl-dot"></div>
+        <div class="tl-connector"></div>
+      </div>
+      <div class="tl-content">
+        <div class="tl-step-num">01 — Event</div>
+        <div class="tl-step-title">Echoes of the Night — Live Concert</div>
+        <div class="chip-row">
+          <span class="chip"><span class="ci">🎸</span> Music · Indie / Fusion</span>
+          <span class="chip"><span class="ci">📍</span> Palace Grounds, Mysuru</span>
+          <span class="chip"><span class="ci">🌳</span> Outdoor venue</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 — Date & Time -->
+    <div class="tl-item">
+      <div class="tl-spine">
+        <div class="tl-dot"></div>
+        <div class="tl-connector"></div>
+      </div>
+      <div class="tl-content">
+        <div class="tl-step-num">02 — Date & Time</div>
+        <div class="tl-step-title">Saturday, 12 April 2025</div>
+        <div class="chip-row">
+          <span class="chip"><span class="ci">☀️</span> Afternoon slot</span>
+          <span class="chip"><span class="ci">🕔</span> Show at 4:00 PM</span>
+          <span class="chip"><span class="ci">⏱</span> Duration ~3 hrs</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 — Seats -->
+    <div class="tl-item">
+      <div class="tl-spine">
+        <div class="tl-dot"></div>
+        <div class="tl-connector"></div>
+      </div>
+      <div class="tl-content">
+        <div class="tl-step-num">03 — Seats</div>
+        <div class="tl-step-title">3 seats selected</div>
+        <div class="chip-row" style="margin-bottom:12px;">
+          <span class="seat-badge sb-vip">VIP · Row A · Seat 3</span>
+          <span class="seat-badge sb-premium">Premium · Row C · Seat 6</span>
+          <span class="seat-badge sb-std">Standard · Row F · Seat 5</span>
+        </div>
+        <!-- Mini seat map -->
+        <div class="mini-map">
+          <div class="mini-stage">Stage</div>
+          <div class="mini-row">
+            <div class="mini-seat ms-booked"></div>
+            <div class="mini-seat ms-booked"></div>
+            <div class="mini-seat ms-selected"></div>
+            <div class="mini-seat ms-vip"></div>
+            <div class="mini-seat ms-vip"></div>
+            <div class="mini-seat ms-vip"></div>
+            <div class="mini-seat ms-booked"></div>
+            <div class="mini-seat ms-vip"></div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-seat ms-premium"></div>
+            <div class="mini-seat ms-premium"></div>
+            <div class="mini-seat ms-premium"></div>
+            <div class="mini-seat ms-premium"></div>
+            <div class="mini-seat ms-premium"></div>
+            <div class="mini-seat ms-selected"></div>
+            <div class="mini-seat ms-premium"></div>
+            <div class="mini-seat ms-booked"></div>
+            <div class="mini-seat ms-premium"></div>
+            <div class="mini-seat ms-premium"></div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-seat ms-std"></div>
+            <div class="mini-seat ms-std"></div>
+            <div class="mini-seat ms-booked"></div>
+            <div class="mini-seat ms-std"></div>
+            <div class="mini-seat ms-std"></div>
+            <div class="mini-seat ms-selected"></div>
+            <div class="mini-seat ms-std"></div>
+            <div class="mini-seat ms-std"></div>
+            <div class="mini-seat ms-std"></div>
+            <div class="mini-seat ms-booked"></div>
+            <div class="mini-seat ms-std"></div>
+            <div class="mini-seat ms-std"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 — Attendee -->
+    <div class="tl-item">
+      <div class="tl-spine">
+        <div class="tl-dot"></div>
+        <div class="tl-connector"></div>
+      </div>
+      <div class="tl-content">
+        <div class="tl-step-num">04 — Attendee</div>
+        <div class="attendee-row">
+          <div class="avatar-lg">D</div>
+          <div>
+            <div class="attendee-name">Divyamaan Singh</div>
+            <div class="attendee-sub"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="97f3fee1eed7f2eff6fae7fbf2b9f4f8fa">[email&#160;protected]</a> · +91 98XXX XXXXX</div>
+          </div>
+          <span class="edit-link">Edit</span>
+        </div>
+        <div class="chip-row">
+          <span class="chip"><span class="ci">✉</span> Ticket will be emailed</span>
+          <span class="chip"><span class="ci">📱</span> SMS confirmation</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5 — Price Breakdown (last, no connector) -->
+    <div class="tl-item">
+      <div class="tl-spine">
+        <div class="tl-dot"></div>
+      </div>
+      <div class="tl-content" style="margin-bottom:0;">
+        <div class="tl-step-num">05 — Price Breakdown</div>
+        <div class="tl-step-title">Order total</div>
+        <div style="font-size:12px;color:var(--ink-faint);font-weight:300;margin-top:-6px;margin-bottom:14px;">Detailed breakdown is on the right →</div>
+        <div class="chip-row">
+          <span class="chip"><span class="ci">🎟</span> 3 tickets</span>
+          <span class="chip"><span class="ci">💳</span> Pay securely via Razorpay</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right-col">
+
+    <!-- Price breakdown card -->
+    <div class="price-card">
+      <div class="price-card-header">
+        <h3>Price breakdown</h3>
+      </div>
+      <div class="price-rows">
+        <div class="price-row">
+          <span class="pr-label">VIP · Row A · Seat 3</span>
+          <span class="pr-val">₹ 1,999</span>
+        </div>
+        <div class="price-row">
+          <span class="pr-label">Premium · Row C · Seat 6</span>
+          <span class="pr-val">₹ 999</span>
+        </div>
+        <div class="price-row">
+          <span class="pr-label">Standard · Row F · Seat 5</span>
+          <span class="pr-val">₹ 499</span>
+        </div>
+        <div class="price-divider"></div>
+        <div class="price-row faint">
+          <span class="pr-label">Convenience fee</span>
+          <span class="pr-val">₹ 59</span>
+        </div>
+        <div class="price-row discount" id="discount-row" style="display:none;">
+          <span class="pr-label">Promo discount</span>
+          <span class="pr-val" id="discount-val">− ₹ 0</span>
+        </div>
+      </div>
+      <div class="price-total">
+        <span class="pt-label">Total payable</span>
+        <span class="pt-val" id="total-val"><sup>₹</sup>3,556</span>
+      </div>
+    </div>
+
+    <!-- Promo code -->
+    <div class="promo-card">
+      <div class="promo-label"><span>🏷</span> Have a promo code?</div>
+      <div class="promo-input-row">
+        <input class="promo-input" type="text" id="promo-input" placeholder="Enter code" maxlength="12"/>
+        <button class="btn-apply" onclick="applyPromo()">Apply</button>
+      </div>
+      <div id="promo-msg" style="margin-top:8px;font-size:12px;display:none;align-items:center;gap:5px;"></div>
+    </div>
+
+    <!-- Mail note -->
+    <div class="mail-note">
+      <span class="mn-icon">✉</span>
+      <p>Your tickets will be <strong>emailed to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7c18150a053c19041d110c1019521f1311">[email&#160;protected]</a></strong> instantly after payment. A PDF e-ticket and QR code will be attached for entry at the venue.</p>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="action-card">
+      <button class="btn-confirm">
+        Confirm & Pay <span class="gold-arr">→</span>
+      </button>
+      <button class="btn-reserve" onclick="toggleReserve(this)">
+        🔖 Reserve seats for 15 min
+      </button>
+      <button class="btn-edit">
+        ← Edit seats
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<footer class="page-footer">
+  <span class="footer-logo">its<em>my</em>screen</span>
+  <span class="footer-note">High-fidelity mockup · Screen 4 of 4 · Divyamaan Singh</span>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const BASE = 3556;
+let discountApplied = 0;
+
+function applyPromo() {
+  const val = document.getElementById('promo-input').value.trim().toUpperCase();
+  const msg = document.getElementById('promo-msg');
+  const discountRow = document.getElementById('discount-row');
+  const discountVal = document.getElementById('discount-val');
+  const totalEl = document.getElementById('total-val');
+
+  msg.style.display = 'flex';
+
+  if (val === 'FIRST50') {
+    discountApplied = 200;
+    discountRow.style.display = 'flex';
+    discountVal.textContent = '− ₹ 200';
+    totalEl.innerHTML = '<sup>₹</sup>' + (BASE - discountApplied).toLocaleString('en-IN');
+    msg.style.color = '#166534';
+    msg.innerHTML = '✓ &nbsp;Code applied! ₹200 off on your order.';
+  } else if (val === '') {
+    msg.style.color = '#94A3B8';
+    msg.innerHTML = 'Please enter a promo code.';
+  } else {
+    discountApplied = 0;
+    discountRow.style.display = 'none';
+    totalEl.innerHTML = '<sup>₹</sup>' + BASE.toLocaleString('en-IN');
+    msg.style.color = '#D94040';
+    msg.innerHTML = '✕ &nbsp;Invalid code. Try <strong>FIRST50</strong> for ₹200 off.';
+  }
+}
+
+document.getElementById('promo-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') applyPromo();
+});
+
+let reserveActive = false;
+let reserveTimer = null;
+
+function toggleReserve(btn) {
+  if (reserveActive) return;
+  reserveActive = true;
+  btn.style.background = 'var(--gold-pale)';
+  btn.style.borderColor = 'var(--gold)';
+  btn.style.color = '#7a4f00';
+  let secs = 15 * 60;
+  reserveTimer = setInterval(() => {
+    secs--;
+    const m = String(Math.floor(secs / 60)).padStart(2,'0');
+    const s = String(secs % 60).padStart(2,'0');
+     btn.textContent = `🔖 Seats reserved — ${m}:${s} remaining`;
+    if (secs <= 0) {
+      clearInterval(reserveTimer);
+      btn.textContent = '🔖 Reservation expired';
+      btn.style.background = '';
+      btn.style.borderColor = '';
+      btn.style.color = '';
+      reserveActive = false;
+    }
+  }, 1000);
+}
+</script>
+</body>
+</html>

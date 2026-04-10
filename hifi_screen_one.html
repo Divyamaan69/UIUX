@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>itsmyscreen — Discover Events</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:      #0F1F3D;
+    --navy-mid:  #1a3560;
+    --navy-soft: #2a4a7f;
+    --gold:      #E8A020;
+    --gold-light:#F5C355;
+    --gold-pale: #FDF3DC;
+    --red-acc:   #D94040;
+    --bg:        #F8F7F4;
+    --surface:   #FFFFFF;
+    --surface-2: #EEF0F5;
+    --ink:       #0F1F3D;
+    --ink-mid:   #4A5568;
+    --ink-faint: #94A3B8;
+    --border:    #E2E5ED;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(248,247,244,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 60px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--navy);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-mark span {
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .logo-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy);
+    letter-spacing: -0.2px;
+  }
+  .logo-text em {
+    font-style: normal;
+    color: var(--red-acc);
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .btn-ghost {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--navy); color: var(--navy); }
+
+  .btn-navy {
+    background: var(--navy);
+    border: 1.5px solid var(--navy);
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-navy:hover { background: var(--navy-mid); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 60px 64px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 380px;
+    background: radial-gradient(ellipse at center, rgba(232,160,32,0.10) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gold-pale);
+    border: 1px solid rgba(232,160,32,0.3);
+    border-radius: 999px;
+    padding: 5px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #8B6010;
+    margin-bottom: 24px;
+    animation: fadeUp 0.5s ease both;
+  }
+  .eyebrow-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 5vw, 62px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--navy);
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+  .hero h1 .gold { color: var(--gold); }
+
+  .hero-sub {
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--ink-mid);
+    margin-bottom: 40px;
+    line-height: 1.6;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+
+  /* ── AI SEARCH BAR ── */
+  .search-wrap {
+    max-width: 620px;
+    margin: 0 auto;
+    animation: fadeUp 0.5s 0.3s ease both;
+  }
+  .ai-search {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 6px 6px 20px;
+    box-shadow: 0 4px 24px rgba(15,31,61,0.08);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .ai-search:focus-within {
+    border-color: var(--gold);
+    box-shadow: 0 4px 32px rgba(232,160,32,0.15);
+  }
+  .ai-icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ai-icon svg { width: 14px; height: 14px; fill: var(--gold); }
+  .ai-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--ink);
+  }
+  .ai-input::placeholder { color: var(--ink-faint); }
+  .ai-search-btn {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .ai-search-btn:hover { background: var(--navy-mid); }
+  .ai-search-btn .spark { color: var(--gold); font-size: 14px; }
+
+  .search-hint {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .hint-tag {
+    background: var(--surface-2);
+    border-radius: 999px;
+    padding: 3px 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid transparent;
+  }
+  .hint-tag:hover { background: var(--gold-pale); border-color: rgba(232,160,32,0.3); color: #8B6010; }
+
+  /* ── SECTION DIVIDER ── */
+  .section-divider {
+    padding: 0 60px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+  .divider-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  /* ── CATEGORY SECTION ── */
+  .category-section {
+    padding: 0 60px 80px;
+  }
+  .cat-heading {
+    margin-bottom: 32px;
+  }
+  .cat-heading h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .cat-heading p {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--ink-mid);
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+  }
+
+  .cat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    position: relative;
+    animation: fadeUp 0.4s ease both;
+  }
+  .cat-card:nth-child(1) { animation-delay: 0.05s; }
+  .cat-card:nth-child(2) { animation-delay: 0.10s; }
+  .cat-card:nth-child(3) { animation-delay: 0.15s; }
+  .cat-card:nth-child(4) { animation-delay: 0.20s; }
+  .cat-card:nth-child(5) { animation-delay: 0.25s; }
+  .cat-card:nth-child(6) { animation-delay: 0.30s; }
+
+  .cat-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 20px;
+    overflow: visible;
+    border: none;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .cat-img-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1.5px solid var(--border);
+    position: relative;
+  }
+  .cat-card:hover .cat-img-wrap {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(15,31,61,0.14);
+  }
+
+  .cat-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s;
+  }
+  .cat-card:hover .cat-img { transform: scale(1.06); }
+
+  /* Unsplash-sourced category images via CSS backgrounds */
+  .cat-music    { background: linear-gradient(160deg,#1a0533 0%,#4a1070 40%,#8B2FC9 100%); }
+  .cat-comedy   { background: linear-gradient(160deg,#0d2137 0%,#1a5276 40%,#2E86C1 100%); }
+  .cat-theatre  { background: linear-gradient(160deg,#1a0a00 0%,#7d3c00 40%,#C0392B 100%); }
+  .cat-dance    { background: linear-gradient(160deg,#0a1a0a 0%,#1a5c1a 40%,#27AE60 100%); }
+  .cat-festival { background: linear-gradient(160deg,#1a1000 0%,#7d5c00 40%,#F39C12 100%); }
+  .cat-sports   { background: linear-gradient(160deg,#0a0a1a 0%,#1a1a5c 40%,#2980B9 100%); }
+
+  .cat-emoji {
+    font-size: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    line-height: 1;
+  }
+
+  /* Badge */
+  .cat-badge {
+    position: absolute;
+    top: -10px; left: -10px;
+    background: var(--red-acc);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 999px;
+    min-width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    letter-spacing: 0.2px;
+    border: 2px solid var(--bg);
+    box-shadow: 0 2px 8px rgba(217,64,64,0.35);
+    z-index: 2;
+  }
+
+  /* Overlay gradient on image */
+  .cat-img-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15,31,61,0.55) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .cat-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: center;
+    letter-spacing: -0.1px;
+  }
+  .cat-count {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-top: -8px;
+  }
+
+  /* ── TRENDING STRIP ── */
+  .trending-section {
+    background: var(--navy);
+    padding: 40px 60px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    overflow: hidden;
+  }
+  .trending-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+  .trending-divider {
+    width: 1px; height: 28px;
+    background: rgba(255,255,255,0.15);
+    flex-shrink: 0;
+  }
+  .trending-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex: 1;
+  }
+  .trending-scroll::-webkit-scrollbar { display: none; }
+  .trending-pill {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.75);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .trending-pill:hover {
+    background: rgba(232,160,32,0.15);
+    border-color: rgba(232,160,32,0.4);
+    color: var(--gold-light);
+  }
+  .trending-pill.hot {
+    background: rgba(232,160,32,0.12);
+    border-color: rgba(232,160,32,0.35);
+    color: var(--gold-light);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── FOOTER NAV ── */
+  .page-footer {
+    padding: 24px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-logo {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+  .footer-logo em { font-style: normal; color: var(--red-acc); }
+  .footer-note {
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-mark"><span>i</span></div>
+    <span class="logo-text">its<em>my</em>screen</span>
+  </a>
+  <div class="nav-right">
+    <button class="btn-ghost">Sign up</button>
+    <button class="btn-navy">Log in</button>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <div class="eyebrow-dot"></div>
+    AI-powered event discovery
+  </div>
+  <h1>Find your next<br/><span class="gold">unforgettable</span> night.</h1>
+  <p class="hero-sub">Ask our AI to discover, recommend, and book live experiences<br/>tailored exactly to your taste.</p>
+
+  <div class="search-wrap">
+    <div class="ai-search">
+      <div class="ai-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L9.5 9.5L2 12L9.5 14.5L12 22L14.5 14.5L22 12L14.5 9.5L12 2Z"/>
+        </svg>
+      </div>
+      <input class="ai-input" type="text" placeholder="Ask AI — &quot;Find indie concerts near me this weekend…&quot;"/>
+      <button class="ai-search-btn"><span class="spark">✦</span> Search</button>
+    </div>
+    <div class="search-hint">
+      Try:
+      <span class="hint-tag">Jazz in Bengaluru</span>
+      <span class="hint-tag">Comedy shows tonight</span>
+      <span class="hint-tag">Weekend festivals</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── DIVIDER ── -->
+<div class="section-divider">
+  <div class="divider-line"></div>
+  <span class="divider-label">Or browse by category</span>
+  <div class="divider-line"></div>
+</div>
+
+<!-- ── CATEGORIES ── -->
+<section class="category-section">
+  <div class="cat-heading">
+    <h2>New events in your town</h2>
+    <p>Happening now and this week across Mysuru</p>
+  </div>
+
+  <div class="cat-grid">
+
+    <div class="cat-card">
+      <div class="cat-img-wrap cat-music">
+        <div class="cat-img-inner">
+          <div class="cat-emoji">🎸</div>
+        </div>
+        <div class="cat-badge">7</div>
+      </div>
+      <span class="cat-label">Music</span>
+      <span class="cat-count">7 events</span>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-img-wrap cat-comedy">
+        <div class="cat-img-inner">
+          <div class="cat-emoji">🎤</div>
+        </div>
+        <div class="cat-badge">12</div>
+      </div>
+      <span class="cat-label">Comedy</span>
+      <span class="cat-count">12 events</span>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-img-wrap cat-theatre">
+        <div class="cat-img-inner">
+          <div class="cat-emoji">🎭</div>
+        </div>
+        <div class="cat-badge">3</div>
+      </div>
+      <span class="cat-label">Theatre</span>
+      <span class="cat-count">3 events</span>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-img-wrap cat-dance">
+        <div class="cat-img-inner">
+          <div class="cat-emoji">💃</div>
+        </div>
+        <div class="cat-badge">5</div>
+      </div>
+      <span class="cat-label">Dance</span>
+      <span class="cat-count">5 events</span>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-img-wrap cat-festival">
+        <div class="cat-img-inner">
+          <div class="cat-emoji">🎪</div>
+        </div>
+        <div class="cat-badge">2</div>
+      </div>
+      <span class="cat-label">Festivals</span>
+      <span class="cat-count">2 events</span>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-img-wrap cat-sports">
+        <div class="cat-img-inner">
+          <div class="cat-emoji">🏟️</div>
+        </div>
+        <div class="cat-badge">4</div>
+      </div>
+      <span class="cat-label">Sports</span>
+      <span class="cat-count">4 events</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── TRENDING STRIP ── -->
+<div class="trending-section">
+  <span class="trending-label">Trending ✦</span>
+  <div class="trending-divider"></div>
+  <div class="trending-scroll">
+    <div class="trending-pill hot">🔥 Prateek Kuhad — Mysuru</div>
+    <div class="trending-pill">Zakir Hussain Live</div>
+    <div class="trending-pill hot">🔥 Sunburn Arena</div>
+    <div class="trending-pill">Bangalore Comedy Festival</div>
+    <div class="trending-pill">Raghu Dixit Project</div>
+    <div class="trending-pill hot">🔥 NH7 Weekender</div>
+    <div class="trending-pill">The Local Train — Tour 2025</div>
+    <div class="trending-pill">Improv Night at Jagriti</div>
+    <div class="trending-pill">Dastaan Festival</div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer class="page-footer">
+  <span class="footer-logo">its<em>my</em>screen</span>
+  <span class="footer-note">High-fidelity mockup · Screen 1 of 4 · Divyamaan Singh</span>
+</footer>
+
+</body>
+</html>

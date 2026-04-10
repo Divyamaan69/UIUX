@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>itsmyscreen — Select Seats</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:      #0F1F3D;
+    --navy-mid:  #1a3560;
+    --navy-soft: #2a4a7f;
+    --gold:      #E8A020;
+    --gold-light:#F5C355;
+    --gold-pale: #FDF3DC;
+    --red-acc:   #D94040;
+    --green:     #16a34a;
+    --green-light:#dcfce7;
+    --bg:        #F8F7F4;
+    --surface:   #FFFFFF;
+    --surface-2: #EEF0F5;
+    --ink:       #0F1F3D;
+    --ink-mid:   #4A5568;
+    --ink-faint: #94A3B8;
+    --border:    #E2E5ED;
+    --vip:       #7C3AED;
+    --vip-light: #ede9fe;
+    --premium:   #0284C7;
+    --premium-light: #e0f2fe;
+    --std:       #475569;
+    --std-light: #f1f5f9;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 120px;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(248,247,244,0.93);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 60px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .logo-mark { width: 32px; height: 32px; background: var(--navy); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .logo-mark span { color: var(--gold); font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; }
+  .logo-text { font-size: 15px; font-weight: 500; color: var(--navy); }
+  .logo-text em { font-style: normal; color: var(--red-acc); }
+  .nav-center { text-align: center; }
+  .nav-event-name { font-size: 14px; font-weight: 500; color: var(--navy); }
+  .nav-event-sub { font-size: 11px; color: var(--ink-faint); margin-top: 1px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--navy); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: var(--gold); border: 2px solid var(--border); cursor: pointer; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 12px 60px;
+    display: flex; align-items: center; gap: 0;
+  }
+  .prog-step {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 400;
+  }
+  .prog-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500; flex-shrink: 0;
+  }
+  .prog-num.done { background: var(--navy); color: #fff; }
+  .prog-num.active { background: var(--gold); color: var(--navy); }
+  .prog-num.idle { background: var(--surface-2); color: var(--ink-faint); border: 1px solid var(--border); }
+  .prog-label.done { color: var(--ink-mid); }
+  .prog-label.active { color: var(--navy); font-weight: 500; }
+  .prog-label.idle { color: var(--ink-faint); }
+  .prog-line { flex: 1; height: 1px; background: var(--border); margin: 0 16px; max-width: 80px; }
+  .prog-line.done { background: var(--navy); }
+
+  /* ── MAIN LAYOUT ── */
+  .main { padding: 32px 60px; display: flex; gap: 32px; align-items: flex-start; }
+  .left-col { flex: 1; min-width: 0; }
+  .right-col { width: 300px; flex-shrink: 0; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 11px; font-weight: 500; color: var(--ink-faint);
+    text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px;
+  }
+
+  /* ── PERIOD PILLS ── */
+  .period-row { display: flex; gap: 12px; margin-bottom: 28px; }
+  .period-pill {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 4px; padding: 14px 20px;
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 999px; cursor: pointer;
+    transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+  }
+  .period-pill:hover { border-color: var(--navy); }
+  .period-pill.active {
+    background: var(--navy); border-color: var(--navy);
+  }
+  .period-pill .p-icon { font-size: 18px; line-height: 1; }
+  .period-pill .p-name {
+    font-size: 13px; font-weight: 500; color: var(--ink);
+    transition: color 0.2s;
+  }
+  .period-pill.active .p-name { color: #fff; }
+  .period-pill .p-range {
+    font-size: 11px; color: var(--ink-faint); font-weight: 300;
+    transition: color 0.2s;
+  }
+  .period-pill.active .p-range { color: rgba(255,255,255,0.6); }
+
+  /* ── TIME SLOTS ── */
+  .slots-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px 24px; margin-bottom: 28px;
+  }
+  .slots-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .slot-chip {
+    padding: 8px 18px; border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--bg); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 400; color: var(--ink-mid);
+    cursor: pointer; transition: all 0.18s;
+  }
+  .slot-chip:hover { border-color: var(--navy); color: var(--navy); }
+  .slot-chip.active {
+    background: var(--gold-pale); border-color: var(--gold);
+    color: #7a4f00; font-weight: 500;
+  }
+  .slot-chip.soldout {
+    background: var(--surface-2); color: var(--ink-faint);
+    text-decoration: line-through; cursor: not-allowed; opacity: 0.6;
+  }
+
+  /* ── SEAT MAP ── */
+  .seatmap-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; margin-bottom: 20px;
+  }
+  .seatmap-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .seatmap-title { font-size: 15px; font-weight: 500; color: var(--navy); }
+
+  /* Legend */
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ink-mid); }
+  .leg-seat {
+    width: 16px; height: 14px;
+    border-radius: 4px 4px 2px 2px;
+    border-bottom: 2px solid transparent;
+    flex-shrink: 0;
+  }
+  .leg-vip { background: var(--vip-light); border-color: var(--vip); border-top: 1px solid var(--vip); }
+  .leg-premium { background: var(--premium-light); border-color: var(--premium); border-top: 1px solid var(--premium); }
+  .leg-std { background: var(--std-light); border-color: var(--std); border-top: 1px solid var(--std); }
+  .leg-booked { background: #e5e7eb; border-color: #9ca3af; border-top: 1px solid #9ca3af; }
+  .leg-selected { background: var(--green-light); border-color: var(--green); border-top: 1px solid var(--green); }
+
+  /* Stage */
+  .stage {
+    background: linear-gradient(to bottom, var(--navy), var(--navy-soft));
+    border-radius: 8px 8px 40px 40px;
+    text-align: center; padding: 10px 0;
+    margin: 0 auto 28px; width: 65%;
+    box-shadow: 0 4px 20px rgba(15,31,61,0.2);
+  }
+  .stage span {
+    font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.6);
+    text-transform: uppercase; letter-spacing: 2px;
+  }
+
+  /* Seat rows */
+  .seat-rows { display: flex; flex-direction: column; gap: 5px; align-items: center; }
+
+  .seat-row-wrap {
+    display: flex; align-items: center; gap: 0;
+  }
+  .row-label {
+    font-size: 10px; color: var(--ink-faint); width: 36px;
+    text-align: right; padding-right: 10px; flex-shrink: 0;
+    font-weight: 400;
+  }
+  .row-seats { display: flex; gap: 4px; }
+
+  /* Individual seat — 3D look */
+  .seat {
+    width: 26px; height: 22px;
+    border-radius: 5px 5px 3px 3px;
+    border-top: 2px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: transform 0.12s, filter 0.12s;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px;
+  }
+  .seat:hover:not(.booked) { transform: translateY(-2px) scale(1.08); filter: brightness(1.1); }
+
+  .seat.vip {
+    background: var(--vip-light);
+    border-top-color: var(--vip);
+    border-left-color: rgba(124,58,237,0.3);
+    border-right-color: rgba(124,58,237,0.3);
+    border-bottom-color: rgba(124,58,237,0.5);
+    box-shadow: 0 2px 0 rgba(124,58,237,0.25), inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+  .seat.premium {
+    background: var(--premium-light);
+    border-top-color: var(--premium);
+    border-left-color: rgba(2,132,199,0.3);
+    border-right-color: rgba(2,132,199,0.3);
+    border-bottom-color: rgba(2,132,199,0.5);
+    box-shadow: 0 2px 0 rgba(2,132,199,0.25), inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+  .seat.standard {
+    background: var(--std-light);
+    border-top-color: var(--std);
+    border-left-color: rgba(71,85,105,0.25);
+    border-right-color: rgba(71,85,105,0.25);
+    border-bottom-color: rgba(71,85,105,0.4);
+    box-shadow: 0 2px 0 rgba(71,85,105,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+  .seat.booked {
+    background: #e5e7eb;
+    border-top-color: #9ca3af;
+    border-left-color: #d1d5db;
+    border-right-color: #d1d5db;
+    border-bottom-color: #9ca3af;
+    box-shadow: none; cursor: not-allowed;
+    color: #9ca3af; font-size: 9px;
+  }
+  .seat.selected {
+    background: var(--green-light) !important;
+    border-top-color: var(--green) !important;
+    border-left-color: rgba(22,163,74,0.3) !important;
+    border-right-color: rgba(22,163,74,0.3) !important;
+    border-bottom-color: rgba(22,163,74,0.5) !important;
+    box-shadow: 0 2px 0 rgba(22,163,74,0.3), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+  }
+
+  /* gap between left/right halves */
+  .aisle { width: 20px; flex-shrink: 0; }
+
+  /* Price tier cards on right */
+  .tier-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .tier-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .tier-swatch {
+    width: 36px; height: 30px; border-radius: 6px 6px 4px 4px;
+    border-top: 3px solid transparent;
+    border-bottom: 4px solid transparent;
+    flex-shrink: 0;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+  .swatch-vip { background: var(--vip-light); border-top-color: var(--vip); border-bottom-color: rgba(124,58,237,0.4); }
+  .swatch-premium { background: var(--premium-light); border-top-color: var(--premium); border-bottom-color: rgba(2,132,199,0.4); }
+  .swatch-std { background: var(--std-light); border-top-color: var(--std); border-bottom-color: rgba(71,85,105,0.3); }
+  .tier-info { flex: 1; }
+  .tier-name { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 1px; }
+  .tier-desc { font-size: 11px; color: var(--ink-faint); font-weight: 300; }
+  .tier-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; font-weight: 700; color: var(--navy);
+  }
+  .tier-price sup { font-size: 11px; vertical-align: super; font-family: 'DM Sans', sans-serif; font-weight: 400; }
+
+  /* ── FLOATING SUMMARY CARD ── */
+  .float-card {
+    position: fixed; bottom: 28px; right: 40px;
+    width: 300px;
+    background: var(--navy);
+    border-radius: 20px;
+    padding: 20px 22px;
+    box-shadow: 0 16px 48px rgba(15,31,61,0.35);
+    z-index: 200;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: translateY(120px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .float-card.visible {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: all;
+  }
+  .float-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .float-title { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.8px; }
+  .float-count {
+    background: var(--gold); color: var(--navy);
+    border-radius: 999px; padding: 2px 10px;
+    font-size: 11px; font-weight: 500;
+  }
+  .float-seats { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .float-seat-row {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px;
+  }
+  .float-seat-label { color: rgba(255,255,255,0.75); font-weight: 300; }
+  .float-seat-price { color: var(--gold-light); font-weight: 500; }
+  .float-divider { height: 1px; background: rgba(255,255,255,0.1); margin-bottom: 14px; }
+  .float-total-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+  .float-total-label { font-size: 12px; color: rgba(255,255,255,0.5); }
+  .float-total-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 700; color: #fff;
+  }
+  .float-total-val sup { font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 400; vertical-align: super; }
+  .btn-confirm {
+    width: 100%; padding: 13px;
+    background: var(--gold); border: none; border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    color: var(--navy); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.2s;
+  }
+  .btn-confirm:hover { background: var(--gold-light); }
+  .btn-confirm .arr { font-size: 16px; }
+
+  /* ── PLACEHOLDER (no time selected) ── */
+  .map-placeholder {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 10px;
+    padding: 48px 24px; text-align: center;
+  }
+  .map-placeholder .ph-icon { font-size: 36px; opacity: 0.3; }
+  .map-placeholder p { font-size: 13px; color: var(--ink-faint); font-weight: 300; }
+
+  /* ── FOOTER ── */
+  .page-footer { padding: 24px 60px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; margin-top: 40px; }
+  .footer-logo { font-size: 13px; color: var(--ink-faint); }
+  .footer-logo em { font-style: normal; color: var(--red-acc); }
+  .footer-note { font-size: 11px; color: var(--ink-faint); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-mark"><span>i</span></div>
+    <span class="logo-text">its<em>my</em>screen</span>
+  </a>
+  <div class="nav-center">
+    <div class="nav-event-name">Echoes of the Night — Live Concert</div>
+    <div class="nav-event-sub">Palace Grounds, Mysuru · Sat, 12 Apr 2025</div>
+  </div>
+  <div class="avatar">D</div>
+</nav>
+
+<!-- ── PROGRESS ── -->
+<div class="progress-bar">
+  <div class="prog-step">
+    <div class="prog-num done">✓</div>
+    <span class="prog-label done">Event chosen</span>
+  </div>
+  <div class="prog-line done"></div>
+  <div class="prog-step">
+    <div class="prog-num active">2</div>
+    <span class="prog-label active">Timing & seats</span>
+  </div>
+  <div class="prog-line"></div>
+  <div class="prog-step">
+    <div class="prog-num idle">3</div>
+    <span class="prog-label idle">Summary & payment</span>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- LEFT COLUMN -->
+  <div class="left-col">
+
+    <!-- Period selector -->
+    <p class="section-label">Choose a time of day</p>
+    <div class="period-row">
+      <button class="period-pill" onclick="selectPeriod('morning')" id="pill-morning">
+        <span class="p-icon">🌅</span>
+        <span class="p-name">Morning</span>
+        <span class="p-range">10 AM – 2 PM</span>
+      </button>
+      <button class="period-pill active" onclick="selectPeriod('afternoon')" id="pill-afternoon">
+        <span class="p-icon">☀️</span>
+        <span class="p-name">Afternoon</span>
+        <span class="p-range">2 PM – 6 PM</span>
+      </button>
+      <button class="period-pill" onclick="selectPeriod('night')" id="pill-night">
+        <span class="p-icon">🌙</span>
+        <span class="p-name">Night</span>
+        <span class="p-range">6 PM – 10 PM</span>
+      </button>
+    </div>
+
+    <!-- Time slots -->
+    <div class="slots-wrap">
+      <p class="section-label" style="margin-bottom:12px;">Available showtimes</p>
+      <div class="slots-grid" id="slots-grid"></div>
+    </div>
+
+    <!-- Seat map -->
+    <div class="seatmap-wrap">
+      <div class="seatmap-header">
+        <span class="seatmap-title">Seat map</span>
+        <div class="legend">
+          <div class="legend-item"><div class="leg-seat leg-vip"></div> VIP</div>
+          <div class="legend-item"><div class="leg-seat leg-premium"></div> Premium</div>
+          <div class="legend-item"><div class="leg-seat leg-std"></div> Standard</div>
+          <div class="legend-item"><div class="leg-seat leg-booked"></div> Booked</div>
+          <div class="legend-item"><div class="leg-seat leg-selected"></div> Selected</div>
+        </div>
+      </div>
+
+      <!-- Stage -->
+      <div class="stage"><span>Stage</span></div>
+
+      <!-- Seat rows -->
+      <div class="seat-rows" id="seat-rows">
+        <div class="map-placeholder">
+          <div class="ph-icon">🎫</div>
+          <p>Select a showtime above to view available seats</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN — tier info -->
+  <div class="right-col">
+    <p class="section-label">Pricing tiers</p>
+    <div class="tier-cards">
+      <div class="tier-card">
+        <div class="tier-swatch swatch-vip"></div>
+        <div class="tier-info">
+          <div class="tier-name">VIP</div>
+          <div class="tier-desc">Front rows · Best view</div>
+        </div>
+        <div class="tier-price"><sup>₹</sup>1,999</div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-swatch swatch-premium"></div>
+        <div class="tier-info">
+          <div class="tier-name">Premium</div>
+          <div class="tier-desc">Mid rows · Great view</div>
+        </div>
+        <div class="tier-price"><sup>₹</sup>999</div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-swatch swatch-std"></div>
+        <div class="tier-info">
+          <div class="tier-name">Standard</div>
+          <div class="tier-desc">Back rows · Good value</div>
+        </div>
+        <div class="tier-price"><sup>₹</sup>499</div>
+      </div>
+    </div>
+
+    <!-- Tip box -->
+    <div style="background:var(--gold-pale);border:1px solid rgba(232,160,32,0.3);border-radius:12px;padding:14px 16px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+        <span style="font-size:13px;">✦</span>
+        <span style="font-size:12px;font-weight:500;color:#7a4f00;">AI tip</span>
+      </div>
+      <p style="font-size:12px;color:#8B6010;font-weight:300;line-height:1.6;">Rows C–D offer the best value for this venue — great sightlines without the VIP premium.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── FLOATING SUMMARY CARD ── -->
+<div class="float-card" id="float-card">
+  <div class="float-header">
+    <span class="float-title">Your selection</span>
+    <span class="float-count" id="float-count">0 seats</span>
+  </div>
+  <div class="float-seats" id="float-seats"></div>
+  <div class="float-divider"></div>
+  <div class="float-total-row">
+    <span class="float-total-label">Total payable</span>
+    <span class="float-total-val" id="float-total"><sup>₹</sup>0</span>
+  </div>
+  <button class="btn-confirm" onclick="window.location.href='#'">
+    Proceed to Summary <span class="arr">→</span>
+  </button>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer class="page-footer">
+  <span class="footer-logo">its<em>my</em>screen</span>
+  <span class="footer-note">High-fidelity mockup · Screen 3 of 4 · Divyamaan Singh</span>
+</footer>
+
+<script>
+const periods = {
+  morning:   { slots: [{ t:'10:00 AM', sold:false },{ t:'11:30 AM', sold:true },{ t:'12:00 PM', sold:false },{ t:'1:00 PM', sold:false }] },
+  afternoon: { slots: [{ t:'2:00 PM', sold:false },{ t:'3:30 PM', sold:false },{ t:'4:00 PM', sold:false },{ t:'5:00 PM', sold:true },{ t:'5:30 PM', sold:false }] },
+  night:     { slots: [{ t:'6:00 PM', sold:false },{ t:'7:30 PM', sold:false },{ t:'8:00 PM', sold:false },{ t:'9:00 PM', sold:true }] }
+};
+
+// row definitions: label, tier, booked seat indices, total seats, curve offset (px)
+const rows = [
+  { label:'A', tier:'vip',      total:8,  booked:[2,6],    curve:0  },
+  { label:'B', tier:'vip',      total:8,  booked:[1,5],    curve:2  },
+  { label:'C', tier:'premium',  total:10, booked:[3,8],    curve:5  },
+  { label:'D', tier:'premium',  total:10, booked:[0,7],    curve:8  },
+  { label:'E', tier:'standard', total:12, booked:[2,5,10], curve:12 },
+  { label:'F', tier:'standard', total:12, booked:[4,9],    curve:16 },
+  { label:'G', tier:'standard', total:14, booked:[1,6,11], curve:20 },
+];
+
+const prices = { vip: 1999, premium: 999, standard: 499 };
+let currentPeriod = 'afternoon';
+let selectedTime = null;
+let selectedSeats = new Set(); // "rowLabel-seatIdx"
+
+function selectPeriod(p) {
+  currentPeriod = p;
+  selectedTime = null;
+  selectedSeats.clear();
+  ['morning','afternoon','night'].forEach(x => {
+    document.getElementById('pill-'+x).className = 'period-pill' + (x===p?' active':'');
+  });
+  renderSlots();
+  renderMap(false);
+  updateFloat();
+}
+
+function renderSlots() {
+  const grid = document.getElementById('slots-grid');
+  grid.innerHTML = '';
+  periods[currentPeriod].slots.forEach(s => {
+    const el = document.createElement('button');
+    el.className = 'slot-chip' + (s.sold?' soldout':'') + (selectedTime===s.t?' active':'');
+    el.textContent = s.sold ? s.t+' · Sold out' : s.t;
+    if (!s.sold) el.onclick = () => { selectedTime = s.t; selectedSeats.clear(); renderSlots(); renderMap(true); updateFloat(); };
+    grid.appendChild(el);
+  });
+}
+
+function renderMap(show) {
+  const container = document.getElementById('seat-rows');
+  container.innerHTML = '';
+  if (!show) {
+    container.innerHTML = '<div class="map-placeholder"><div class="ph-icon">🎫</div><p>Select a showtime above to view available seats</p></div>';
+    return;
+  }
+  rows.forEach(row => {
+    const wrap = document.createElement('div');
+    wrap.className = 'seat-row-wrap';
+    wrap.style.marginTop = row.curve + 'px';
+
+    const lbl = document.createElement('span');
+    lbl.className = 'row-label';
+    lbl.textContent = row.label;
+    wrap.appendChild(lbl);
+
+    const half = Math.floor(row.total / 2);
+
+    // left half
+    const leftGroup = document.createElement('div');
+    leftGroup.className = 'row-seats';
+    for (let i = 0; i < half; i++) addSeat(leftGroup, row, i);
+    wrap.appendChild(leftGroup);
+
+    // aisle
+    const aisle = document.createElement('div');
+    aisle.className = 'aisle';
+    wrap.appendChild(aisle);
+
+    // right half
+    const rightGroup = document.createElement('div');
+    rightGroup.className = 'row-seats';
+    for (let i = half; i < row.total; i++) addSeat(rightGroup, row, i);
+    wrap.appendChild(rightGroup);
+
+    container.appendChild(wrap);
+  });
+}
+
+function addSeat(parent, row, idx) {
+  const isBooked = row.booked.includes(idx);
+  const id = row.label + '-' + idx;
+  const isSelected = selectedSeats.has(id);
+  const seat = document.createElement('div');
+  seat.className = 'seat ' + row.tier + (isBooked?' booked':'') + (isSelected?' selected':'');
+  seat.textContent = isBooked ? '✕' : '';
+  if (!isBooked) {
+    seat.onclick = () => {
+      selectedSeats.has(id) ? selectedSeats.delete(id) : selectedSeats.add(id);
+      renderMap(true);
+      updateFloat();
+    };
+  }
+  parent.appendChild(seat);
+}
+
+function updateFloat() {
+  const card = document.getElementById('float-card');
+  const countEl = document.getElementById('float-count');
+  const seatsEl = document.getElementById('float-seats');
+  const totalEl = document.getElementById('float-total');
+
+  if (selectedSeats.size === 0) {
+    card.classList.remove('visible');
+    return;
+  }
+
+  card.classList.add('visible');
+  countEl.textContent = selectedSeats.size + ' seat' + (selectedSeats.size > 1 ? 's' : '');
+
+  let total = 0;
+  seatsEl.innerHTML = '';
+
+  Array.from(selectedSeats).forEach(id => {
+    const rowLabel = id.split('-')[0];
+    const rowData = rows.find(r => r.label === rowLabel);
+    const price = prices[rowData.tier];
+    total += price;
+    const row = document.createElement('div');
+    row.className = 'float-seat-row';
+    const tierCap = rowData.tier.charAt(0).toUpperCase() + rowData.tier.slice(1);
+    row.innerHTML = `<span class="float-seat-label">Row ${rowLabel} · ${tierCap}</span><span class="float-seat-price">₹${price.toLocaleString('en-IN')}</span>`;
+    seatsEl.appendChild(row);
+  });
+
+  totalEl.innerHTML = '<sup>₹</sup>' + total.toLocaleString('en-IN');
+}
+
+// Init
+renderSlots();
+renderMap(false);
+</script>
+</body>
+</html>

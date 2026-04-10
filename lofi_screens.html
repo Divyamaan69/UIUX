@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>itsmyscreen — UI/UX Assignment · Divyamaan Singh</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a1a;
+    --ink-muted: #888;
+    --ink-faint: #bbb;
+    --surface: #fafaf8;
+    --surface-2: #f2f1ee;
+    --border: #e0ddd8;
+    --border-strong: #c8c5be;
+    --red: #e24b4a;
+    --green: #4caf50;
+    --vip: #f0995b;
+    --premium: #7f77dd;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px 10vw;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 480px; height: 480px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f0ddd8 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cover-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px; height: 1px;
+    background: var(--ink-muted);
+  }
+  .cover h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 6vw, 72px);
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 24px;
+    max-width: 700px;
+  }
+  .cover h1 em {
+    font-style: normal;
+    color: var(--red);
+  }
+  .cover-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 48px;
+  }
+  .cover-meta p { font-size: 13px; color: var(--ink-muted); }
+  .cover-meta strong { color: var(--ink); font-weight: 500; }
+  .cover-nav {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .cover-nav a {
+    text-decoration: none;
+    font-size: 12px;
+    color: var(--ink-muted);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 8px 18px;
+    transition: all 0.2s;
+    background: #fff;
+  }
+  .cover-nav a:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  /* ── SECTION WRAPPER ── */
+  .screen-section {
+    padding: 80px 10vw;
+    border-bottom: 1px solid var(--border);
+  }
+  .screen-section:nth-child(even) { background: var(--surface-2); }
+
+  .section-header {
+    margin-bottom: 40px;
+  }
+  .section-number {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+  .section-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .section-header p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+  .reasoning-box {
+    margin-top: 28px;
+    border-left: 3px solid var(--border-strong);
+    padding: 14px 20px;
+    background: #fff;
+    border-radius: 0 8px 8px 0;
+  }
+  .reasoning-box p {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.8;
+  }
+  .reasoning-box strong { color: var(--ink); font-weight: 500; }
+
+  /* ── WIREFRAME CHROME ── */
+  .wireframe-chrome {
+    border: 1.5px solid var(--border-strong);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f5f5f3;
+  }
+  .chrome-bar {
+    background: #e8e6e1;
+    border-bottom: 1px solid var(--border-strong);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chrome-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .chrome-dot.r { background: #ff5f57; }
+  .chrome-dot.y { background: #ffbd2e; }
+  .chrome-dot.g { background: #28c840; }
+  .chrome-url {
+    flex: 1;
+    background: #fff;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin: 0 8px;
+  }
+
+  /* ── SCREEN 1: EVENT DISCOVERY ── */
+  .s1-nav {
+    background: #fff;
+    border-bottom: 1.5px solid #ccc;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo-box {
+    background: #ddd;
+    border: 1.5px solid #bbb;
+    border-radius: 6px;
+    width: 100px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: #888; font-weight: 500;
+  }
+  .btn-outline {
+    border: 1.5px solid #bbb;
+    border-radius: 6px;
+    padding: 5px 16px;
+    background: #fff;
+    font-size: 11px; color: #888;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-filled {
+    border: 1.5px solid #bbb;
+    border-radius: 6px;
+    padding: 5px 16px;
+    background: #ddd;
+    font-size: 11px; color: #666;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .s1-hero {
+    padding: 48px 32px 16px;
+    text-align: center;
+  }
+  .s1-hero .tagline {
+    font-size: 22px;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 6px;
+  }
+  .s1-hero .sub {
+    font-size: 12px;
+    color: #bbb;
+    margin-bottom: 24px;
+  }
+  .ai-search-bar {
+    max-width: 520px;
+    margin: 0 auto;
+    background: #fff;
+    border: 2px solid #bbb;
+    border-radius: 999px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ai-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid #bbb;
+    background: #e8e8e8;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ai-dot::after { content: ''; width: 6px; height: 6px; background: #aaa; border-radius: 50%; }
+  .ai-placeholder { font-size: 12px; color: #ccc; flex: 1; }
+  .ai-btn {
+    background: #ddd;
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 11px; color: #888;
+  }
+  .s1-divider {
+    border: none;
+    border-top: 1px dashed #ccc;
+    margin: 32px 32px 0;
+  }
+  .s1-cats {
+    padding: 20px 32px 40px;
+  }
+  .s1-cats .section-lbl {
+    font-size: 10px;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .s1-cats .section-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 20px;
+  }
+  .cat-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .cat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    width: 80px;
+  }
+  .cat-circle-wrap { position: relative; }
+  .cat-circle {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    border: 1.5px solid #bbb;
+    display: flex;
+    align-items: center; justify-content: center;
+    font-size: 11px; color: #999;
+  }
+  .cat-badge {
+    position: absolute;
+    top: -4px; left: -4px;
+    background: var(--red);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 500;
+    border-radius: 50%;
+    width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid #f5f5f3;
+  }
+  .cat-label { font-size: 10px; color: #888; text-align: center; }
+
+  /* ── SCREEN 2: EVENT DETAIL ── */
+  .s2-nav {
+    background: #fff;
+    border-bottom: 1.5px solid #ccc;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .location-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .location-picker .lbl { font-size: 9px; color: #bbb; text-transform: uppercase; letter-spacing: 0.5px; }
+  .location-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1.5px solid #bbb;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px; color: #666;
+  }
+  .loc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+  .s2-body { padding: 24px 28px; }
+  .breadcrumb { font-size: 10px; color: #bbb; margin-bottom: 4px; }
+  .page-title { font-size: 18px; font-weight: 500; color: #444; margin-bottom: 20px; }
+  .event-card {
+    background: #fff;
+    border: 1.5px solid #ccc;
+    border-radius: 10px;
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .event-photo {
+    width: 160px;
+    min-width: 160px;
+    background: #ddd;
+    border-right: 1.5px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+  }
+  .photo-thumb {
+    width: 40px; height: 40px;
+    border-radius: 6px;
+    background: #c8c8c8;
+    border: 1.5px solid #bbb;
+  }
+  .photo-lbl { font-size: 9px; color: #aaa; }
+  .event-info { flex: 1; padding: 16px 20px; display: flex; flex-direction: column; justify-content: space-between; }
+  .event-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .event-name { font-size: 15px; font-weight: 500; color: #333; margin-bottom: 4px; }
+  .event-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip { font-size: 11px; color: #888; }
+  .event-price { text-align: right; flex-shrink: 0; margin-left: 20px; }
+  .price-from { font-size: 11px; color: #aaa; margin-bottom: 2px; }
+  .price-val { font-size: 16px; font-weight: 500; color: #444; }
+  .event-desc {
+    background: #f7f7f7;
+    border: 1px dashed #ddd;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+  }
+  .desc-lbl { font-size: 9px; color: #bbb; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+  .desc-text { font-size: 11px; color: #aaa; line-height: 1.6; }
+  .event-actions { display: flex; gap: 10px; }
+  .btn-maps {
+    border: 1.5px solid #bbb;
+    border-radius: 6px;
+    padding: 7px 14px;
+    background: #fff;
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: #888;
+    cursor: pointer;
+  }
+  .maps-icon { width: 10px; height: 10px; border-radius: 50%; background: #ddd; border: 1px solid #bbb; }
+  .btn-book {
+    border: 1.5px solid #333;
+    border-radius: 6px;
+    padding: 7px 20px;
+    background: #333;
+    font-size: 11px; color: #fff; font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .card-skeleton {
+    background: #fff;
+    border: 1.5px dashed #ccc;
+    border-radius: 10px;
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 16px;
+    overflow: hidden;
+    opacity: 0.45;
+  }
+  .skel-photo { width: 160px; min-width: 160px; background: #ebebeb; border-right: 1.5px dashed #ccc; display: flex; align-items: center; justify-content: center; }
+  .skel-photo span { font-size: 9px; color: #ccc; }
+  .skel-body { flex: 1; padding: 16px 20px; }
+  .skel-line { height: 11px; background: #e8e8e8; border-radius: 4px; margin-bottom: 8px; }
+  .skel-btn { height: 28px; background: #ebebeb; border-radius: 6px; width: 100px; display: inline-block; }
+
+  /* ── SCREEN 3: SEAT SELECTION ── */
+  .s3-nav {
+    background: #fff;
+    border-bottom: 1.5px solid #ccc;
+    padding: 12px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .s3-title { text-align: center; }
+  .s3-title .sub { font-size: 10px; color: #bbb; text-transform: uppercase; letter-spacing: 0.5px; }
+  .s3-title .main { font-size: 13px; font-weight: 500; color: #444; }
+  .s3-progress {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 8px 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+  }
+  .prog-step { display: flex; align-items: center; gap: 5px; }
+  .prog-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+  }
+  .prog-dot.done { background: #333; color: #fff; }
+  .prog-dot.active { background: #333; color: #fff; }
+  .prog-dot.idle { background: #ddd; color: #aaa; }
+  .prog-line { flex: 1; height: 1px; background: #ccc; }
+  .prog-lbl.done { color: #555; }
+  .prog-lbl.active { color: #333; font-weight: 500; }
+  .prog-lbl.idle { color: #aaa; }
+  .s3-body { padding: 20px 28px; }
+  .period-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 16px; }
+  .period-btn-s3 {
+    cursor: pointer;
+    border: 1.5px solid #bbb;
+    border-radius: 8px;
+    padding: 9px 22px;
+    font-size: 12px;
+    color: #777;
+    background: #fff;
+    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .period-btn-s3.active { background: #333; color: #fff; border-color: #333; }
+  .period-btn-s3:hover:not(.active) { background: #f0f0f0; }
+  .slots-box {
+    background: #fff;
+    border: 1.5px solid #ccc;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  .slots-lbl { font-size: 10px; color: #bbb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .slots-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .slot-chip {
+    cursor: pointer;
+    border: 1.5px solid #bbb;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    color: #888;
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .slot-chip.active { background: #333; color: #fff; border-color: #333; }
+  .slot-chip:hover:not(.active) { background: #eee; }
+  .seatmap-box {
+    background: #fff;
+    border: 1.5px solid #ccc;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .seatmap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .seatmap-title { font-size: 13px; font-weight: 500; color: #444; }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #aaa; }
+  .legend-swatch {
+    width: 13px; height: 11px;
+    border-radius: 3px 3px 1px 1px;
+    border: 1px solid;
+  }
+  .stage-bar {
+    background: #e8e8e8;
+    border: 1.5px dashed #bbb;
+    border-radius: 6px;
+    text-align: center;
+    padding: 7px;
+    margin-bottom: 16px;
+    font-size: 10px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .seat-grid { display: flex; flex-direction: column; gap: 5px; align-items: center; }
+  .seat-row-wrap { display: flex; align-items: center; gap: 5px; }
+  .seat-row-lbl { font-size: 9px; color: #bbb; width: 46px; text-align: right; flex-shrink: 0; }
+  .seat {
+    width: 24px; height: 20px;
+    border-radius: 4px 4px 2px 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px;
+    cursor: pointer;
+    border: 1px solid #bbb;
+    background: #fff;
+    color: #999;
+    flex-shrink: 0;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .seat.booked { background: #e0e0e0; border-color: #ccc; color: #bbb; cursor: not-allowed; }
+  .seat.selected { background: var(--green); border-color: #388e3c; color: #fff; }
+  .seat.vip-s { border-color: var(--vip); background: #fff8f3; }
+  .seat.premium-s { border-color: var(--premium); background: #f5f4fe; }
+  .seat.standard-s { border-color: #bbb; background: #fff; }
+  .seat:hover:not(.booked) { background: #d4edda; border-color: var(--green); }
+  .price-guide { margin-top: 14px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .price-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #aaa; }
+  .price-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .bottom-bar {
+    background: #fff;
+    border: 1.5px solid #ccc;
+    border-radius: 10px;
+    padding: 13px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bb-info .bb-lbl { font-size: 10px; color: #bbb; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
+  .bb-info .bb-val { font-size: 13px; font-weight: 500; color: #444; }
+  .bb-total { text-align: center; }
+  .bb-total .bb-lbl { font-size: 10px; color: #bbb; margin-bottom: 2px; }
+  .bb-total .bb-amt { font-size: 16px; font-weight: 500; color: #333; }
+  .btn-proceed-inactive {
+    background: #ccc; border-radius: 6px; padding: 9px 22px;
+    font-size: 12px; color: #666; font-weight: 500;
+    opacity: 0.5; cursor: not-allowed;
+    border: none; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-proceed-active {
+    background: #222; border-radius: 6px; padding: 9px 22px;
+    font-size: 12px; color: #fff; font-weight: 500;
+    cursor: pointer; border: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* ── SCREEN 4: BOOKING SUMMARY ── */
+  .s4-nav {
+    background: #fff;
+    border-bottom: 1.5px solid #ccc;
+    padding: 12px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .s4-progress {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 8px 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+  }
+  .s4-body { padding: 32px 28px; }
+  .s4-heading { font-size: 20px; font-weight: 500; color: #222; margin-bottom: 4px; }
+  .s4-sub { font-size: 12px; color: #bbb; margin-bottom: 32px; }
+  .timeline { display: flex; flex-direction: column; }
+  .tl-row { display: flex; gap: 18px; align-items: flex-start; }
+  .tl-line-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .tl-dot { width: 13px; height: 13px; border-radius: 50%; background: #333; border: 2px solid #333; flex-shrink: 0; margin-top: 3px; }
+  .tl-connector { width: 1.5px; background: #ccc; flex: 1; min-height: 44px; margin: 4px 0; }
+  .tl-content { flex: 1; padding-bottom: 28px; }
+  .tl-step-lbl { font-size: 10px; color: #bbb; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
+  .tl-step-title { font-size: 14px; font-weight: 500; color: #333; margin-bottom: 7px; }
+  .detail-chip-s4 {
+    display: inline-block;
+    background: #f2f2f2;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 11px;
+    color: #666;
+    margin: 2px 3px 2px 0;
+  }
+  .seat-badge-s4 {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 3px 9px;
+    font-size: 10px;
+    margin: 2px 3px 2px 0;
+    border: 1px solid;
+  }
+  .sb-vip { background: #fff8f3; border-color: var(--vip); color: #c47020; }
+  .sb-prem { background: #f5f4fe; border-color: var(--premium); color: #4a3fa3; }
+  .sb-std { background: #f5f5f5; border-color: #bbb; color: #666; }
+  .tl-note { font-size: 11px; color: #bbb; margin-top: 5px; }
+  .price-table {
+    background: #fff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+  }
+  .pt-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+  }
+  .pt-row .pt-label { color: #777; }
+  .pt-row .pt-val { color: #555; font-weight: 500; }
+  .pt-row.faint .pt-label { color: #aaa; }
+  .pt-row.faint .pt-val { color: #aaa; }
+  .pt-row.total { background: #f7f7f7; }
+  .pt-row.total .pt-label { font-size: 13px; font-weight: 500; color: #333; }
+  .pt-row.total .pt-val { font-size: 15px; font-weight: 500; color: #222; }
+  .s4-action-bar {
+    margin-top: 28px;
+    background: #fff;
+    border: 1.5px solid #ccc;
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .s4-total-lbl { font-size: 10px; color: #bbb; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
+  .s4-total-val { font-size: 19px; font-weight: 500; color: #222; }
+  .s4-btns { display: flex; gap: 10px; }
+  .btn-edit {
+    border: 1.5px solid #bbb; border-radius: 6px;
+    padding: 9px 16px; font-size: 12px; color: #888;
+    background: #fff; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-confirm {
+    border: none; border-radius: 6px;
+    padding: 9px 24px; font-size: 12px; color: #fff; font-weight: 500;
+    background: #222; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding: 40px 10vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer p { font-size: 12px; color: var(--ink-muted); }
+  .footer a { color: var(--ink-muted); text-decoration: none; border-bottom: 1px solid var(--border-strong); }
+  .footer a:hover { color: var(--ink); border-color: var(--ink); }
+
+  @media (max-width: 640px) {
+    .cover { padding: 60px 6vw; }
+    .screen-section { padding: 48px 5vw; }
+    .event-card, .card-skeleton { flex-direction: column; }
+    .event-photo, .skel-photo { width: 100%; min-width: unset; height: 80px; border-right: none; border-bottom: 1.5px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     COVER
+══════════════════════════════════════════ -->
+<section class="cover">
+  <div class="cover-eyebrow">itsmyscreen · UI/UX Designer Assignment</div>
+  <h1>Booking flow <em>wireframes</em> for a live events platform</h1>
+  <div class="cover-meta">
+    <p><strong>Candidate</strong> — Divyamaan Singh</p>
+    <p><strong>Deliverable</strong> — Low-fidelity wireframes · 4 screens · Desktop view</p>
+    <p><strong>Note</strong> — All screens are interactive. Click through them to explore states.</p>
+  </div>
+  <nav class="cover-nav">
+    <a href="#screen1">01 · Event Discovery</a>
+    <a href="#screen2">02 · Event Detail</a>
+    <a href="#screen3">03 · Seat & Time Selection</a>
+    <a href="#screen4">04 · Booking Summary</a>
+  </nav>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 1 — EVENT DISCOVERY
+══════════════════════════════════════════ -->
+<section class="screen-section" id="screen1">
+  <div class="section-header">
+    <p class="section-number">Screen 01</p>
+    <h2>Event Discovery</h2>
+    <p>The entry point of the booking journey. Users are greeted with an AI-powered search bar as the primary action, and a categorised browsing section for users who prefer to explore manually.</p>
+  </div>
+
+  <div class="wireframe-chrome">
+    <div class="chrome-bar">
+      <div class="chrome-dot r"></div>
+      <div class="chrome-dot y"></div>
+      <div class="chrome-dot g"></div>
+      <div class="chrome-url">itsmyscreen.in/discover</div>
+    </div>
+
+    <div style="background:#f5f5f3;">
+      <!-- Nav -->
+      <div class="s1-nav">
+        <div class="logo-box">[ LOGO ]</div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-outline">Sign up</button>
+          <button class="btn-filled">Log in</button>
+        </div>
+      </div>
+
+      <!-- Hero + AI search -->
+      <div class="s1-hero">
+        <p style="font-size:11px;color:#bbb;margin-bottom:4px;">[ Hero copy — tagline ]</p>
+        <p class="tagline">Your next unforgettable night starts here.</p>
+        <p class="sub">Ask AI to find, discover & book your next live experience →</p>
+        <div class="ai-search-bar">
+          <div class="ai-dot"></div>
+          <span class="ai-placeholder">Ask AI — "Find me indie concerts near Mysuru this weekend…"</span>
+          <div class="ai-btn">Search</div>
+        </div>
+        <p style="font-size:9px;color:#ccc;margin-top:6px;">[ AI-powered search bar — pill/oval shape ]</p>
+      </div>
+
+      <hr class="s1-divider"/>
+
+      <!-- Categories -->
+      <div class="s1-cats">
+        <p class="section-lbl">[ Section label ]</p>
+        <p class="section-title">New events happening in your town</p>
+        <div class="cat-row">
+          <div class="cat-item">
+            <div class="cat-circle-wrap">
+              <div class="cat-circle">🎸</div>
+              <div class="cat-badge">7</div>
+            </div>
+            <span class="cat-label">7 events</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-circle-wrap">
+              <div class="cat-circle">🎭</div>
+              <div class="cat-badge">3</div>
+            </div>
+            <span class="cat-label">3 events</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-circle-wrap">
+              <div class="cat-circle">🎤</div>
+              <div class="cat-badge">12</div>
+            </div>
+            <span class="cat-label">12 events</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-circle-wrap">
+              <div class="cat-circle">💃</div>
+              <div class="cat-badge">5</div>
+            </div>
+            <span class="cat-label">5 events</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-circle-wrap">
+              <div class="cat-circle">🎪</div>
+              <div class="cat-badge">2</div>
+            </div>
+            <span class="cat-label">2 events</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-circle-wrap">
+              <div class="cat-circle">🏟️</div>
+              <div class="cat-badge">4</div>
+            </div>
+            <span class="cat-label">4 events</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reasoning-box">
+    <p><strong>Design reasoning:</strong> The AI search bar is the primary CTA — placed centrally above the fold so it is the first thing a user sees. The manual discovery section is a deliberate secondary path for users who prefer to browse. The red badge on each category circle communicates live event count at a glance, nudging exploration. A dashed divider separates the two discovery modes, creating clear visual hierarchy without heavy UI chrome.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 2 — EVENT DETAIL
+══════════════════════════════════════════ -->
+<section class="screen-section" id="screen2">
+  <div class="section-header">
+    <p class="section-number">Screen 02</p>
+    <h2>Event Detail</h2>
+    <p>A list view of events filtered by category and location. Each card surfaces the most decision-critical information — name, timing, price, and venue — before a user commits to reading further.</p>
+  </div>
+
+  <div class="wireframe-chrome">
+    <div class="chrome-bar">
+      <div class="chrome-dot r"></div>
+      <div class="chrome-dot y"></div>
+      <div class="chrome-dot g"></div>
+      <div class="chrome-url">itsmyscreen.in/events/music</div>
+    </div>
+
+    <div style="background:#f5f5f3;">
+      <!-- Nav with location picker -->
+      <div class="s2-nav">
+        <div class="logo-box">[ LOGO ]</div>
+        <div class="location-picker">
+          <span class="lbl">Your location</span>
+          <div class="location-pill">
+            <div class="loc-dot"></div>
+            <span>Mysuru, Karnataka</span>
+            <span style="font-size:9px;color:#bbb;margin-left:2px;">▼</span>
+          </div>
+          <span style="font-size:9px;color:#ccc;font-style:italic;">[ Auto-filled if signed in ]</span>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-outline">Sign up</button>
+          <button class="btn-filled">Log in</button>
+        </div>
+      </div>
+
+      <div class="s2-body">
+        <p class="breadcrumb">[ Breadcrumb: Home › Music › Events ]</p>
+        <p class="page-title">Events near Mysuru</p>
+
+        <!-- Card 1 -->
+        <div class="event-card">
+          <div class="event-photo">
+            <div class="photo-thumb"></div>
+            <span class="photo-lbl">[ Event photo ]</span>
+          </div>
+          <div class="event-info">
+            <div>
+              <div class="event-header">
+                <div>
+                  <p class="event-name">Echoes of the Night — Live Concert</p>
+                  <div class="event-chips">
+                    <span class="chip">🕖 Sat, 12 Apr · 7:00 PM</span>
+                    <span class="chip" style="color:#ddd;">|</span>
+                    <span class="chip">📍 Palace Grounds, Mysuru</span>
+                  </div>
+                </div>
+                <div class="event-price">
+                  <p class="price-from">Starting from</p>
+                  <p class="price-val">₹ 499</p>
+                </div>
+              </div>
+              <div class="event-desc">
+                <p class="desc-lbl">[ Event description ]</p>
+                <p class="desc-text">A multi-genre live music experience featuring indie and fusion artists from across Karnataka. Outdoor venue, food stalls, and more. All ages welcome.</p>
+              </div>
+            </div>
+            <div class="event-actions">
+              <button class="btn-maps"><div class="maps-icon"></div> View on Google Maps</button>
+              <button class="btn-book">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="event-card">
+          <div class="event-photo">
+            <div class="photo-thumb"></div>
+            <span class="photo-lbl">[ Event photo ]</span>
+          </div>
+          <div class="event-info">
+            <div>
+              <div class="event-header">
+                <div>
+                  <p class="event-name">Laugh Factory — Stand-up Night</p>
+                  <div class="event-chips">
+                    <span class="chip">🕗 Sun, 13 Apr · 8:00 PM</span>
+                    <span class="chip" style="color:#ddd;">|</span>
+                    <span class="chip">📍 The Comedy Club, Mysuru</span>
+                  </div>
+                </div>
+                <div class="event-price">
+                  <p class="price-from">Starting from</p>
+                  <p class="price-val">₹ 299</p>
+                </div>
+              </div>
+              <div class="event-desc">
+                <p class="desc-lbl">[ Event description ]</p>
+                <p class="desc-text">Three top comedians take the stage for an evening of original stand-up. Intimate seating, bar access included. 18+ event.</p>
+              </div>
+            </div>
+            <div class="event-actions">
+              <button class="btn-maps"><div class="maps-icon"></div> View on Google Maps</button>
+              <button class="btn-book">Book Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skeleton -->
+        <div class="card-skeleton">
+          <div class="skel-photo"><span>[ Event photo ]</span></div>
+          <div class="skel-body">
+            <div class="skel-line" style="width:55%;"></div>
+            <div class="skel-line" style="width:35%;margin-bottom:14px;"></div>
+            <div class="skel-line" style="height:36px;margin-bottom:14px;"></div>
+            <div style="display:flex;gap:8px;"><div class="skel-btn"></div><div class="skel-btn" style="width:80px;background:#ddd;"></div></div>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:10px;color:#ccc;margin-bottom:4px;">· · · more cards follow the same structure · · ·</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="reasoning-box">
+    <p><strong>Design reasoning:</strong> The location picker is anchored in the navbar center — persistent and always editable, auto-filled when signed in to reduce friction. Price is placed top-right of each card, opposite the event name, creating a fast scan path: name → price → decide to read more. Two distinct CTA styles ("Book Now" filled, "View on Google Maps" outlined) establish clear action hierarchy. The skeleton card communicates the repeating pattern without redundancy.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 3 — SEAT & TIME SELECTION
+══════════════════════════════════════════ -->
+<section class="screen-section" id="screen3">
+  <div class="section-header">
+    <p class="section-number">Screen 03</p>
+    <h2>Seat & Time Selection</h2>
+    <p>The most data-dense screen. A cascading flow guides the user from period → time slot → seat, revealing complexity only when needed. Try clicking through all the states below.</p>
+  </div>
+
+  <div class="wireframe-chrome">
+    <div class="chrome-bar">
+      <div class="chrome-dot r"></div>
+      <div class="chrome-dot y"></div>
+      <div class="chrome-dot g"></div>
+      <div class="chrome-url">itsmyscreen.in/events/echoes-of-the-night/seats</div>
+    </div>
+
+    <div style="background:#f5f5f3;">
+      <div class="s3-nav">
+        <div class="logo-box">[ LOGO ]</div>
+        <div class="s3-title">
+          <div class="sub">Select timing & seats</div>
+          <div class="main">Echoes of the Night — Palace Grounds, Mysuru</div>
+        </div>
+        <div class="btn-filled" style="font-size:11px;padding:5px 14px;">Divy ▾</div>
+      </div>
+
+      <!-- Progress -->
+      <div class="s3-progress">
+        <div class="prog-step"><div class="prog-dot done">✓</div><span class="prog-lbl done">Timing chosen</span></div>
+        <div class="prog-line"></div>
+        <div class="prog-step"><div class="prog-dot active">2</div><span class="prog-lbl active">Select seats</span></div>
+        <div class="prog-line"></div>
+        <div class="prog-step"><div class="prog-dot idle">3</div><span class="prog-lbl idle">Confirm</span></div>
+      </div>
+
+      <div class="s3-body">
+        <!-- Period selector -->
+        <div class="period-row" id="s3-periods">
+          <button class="period-btn-s3" onclick="s3SelectPeriod('morning')" id="s3-btn-morning">🌅 Morning<br><span style="font-size:9px;opacity:0.7;">10 AM – 2 PM</span></button>
+          <button class="period-btn-s3 active" onclick="s3SelectPeriod('afternoon')" id="s3-btn-afternoon">☀️ Afternoon<br><span style="font-size:9px;opacity:0.7;">2 PM – 6 PM</span></button>
+          <button class="period-btn-s3" onclick="s3SelectPeriod('night')" id="s3-btn-night">🌙 Night<br><span style="font-size:9px;opacity:0.7;">6 PM – 10 PM</span></button>
+        </div>
+
+        <!-- Slots -->
+        <div class="slots-box">
+          <p class="slots-lbl">Available showtimes</p>
+          <div class="slots-row" id="s3-slots"></div>
+        </div>
+
+        <!-- Seat map -->
+        <div class="seatmap-box">
+          <div class="seatmap-header">
+            <span class="seatmap-title">Seat map — Concert (Palace Grounds)</span>
+            <div class="legend">
+              <div class="legend-item"><div class="legend-swatch" style="background:#fff8f3;border-color:#f0995b;"></div>VIP</div>
+              <div class="legend-item"><div class="legend-swatch" style="background:#f5f4fe;border-color:#7f77dd;"></div>Premium</div>
+              <div class="legend-item"><div class="legend-swatch" style="background:#fff;border-color:#bbb;"></div>Standard</div>
+              <div class="legend-item"><div class="legend-swatch" style="background:#e0e0e0;border-color:#ccc;"></div>Booked</div>
+              <div class="legend-item"><div class="legend-swatch" style="background:#4caf50;border-color:#388e3c;"></div>Selected</div>
+            </div>
+          </div>
+          <div class="stage-bar">[ Stage / Screen ]</div>
+          <div class="seat-grid" id="s3-seatgrid"></div>
+          <div class="price-guide" id="s3-priceguide"></div>
+        </div>
+
+        <!-- Bottom bar -->
+        <div class="bottom-bar">
+          <div class="bb-info">
+            <div class="bb-lbl">Selected</div>
+            <div class="bb-val" id="s3-selected-info">No seats selected</div>
+          </div>
+          <div class="bb-total" id="s3-total-display" style="display:none;">
+            <div class="bb-lbl">Total</div>
+            <div class="bb-amt" id="s3-total-amt"></div>
+          </div>
+          <button class="btn-proceed-inactive" id="s3-proceed-btn">Proceed to Book →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reasoning-box">
+    <p><strong>Design reasoning:</strong> A cascading reveal (period → time → seats) prevents cognitive overload — the seat map only appears after a time is committed. Concert layout places VIP seats at the front (closest to stage), standard at the back, mirroring real venue logic. Booked seats show ✕ and are greyed out rather than hidden, preserving the user's spatial understanding of the venue. The "Proceed to Book" button is disabled until at least one seat is selected, preventing empty-state errors downstream.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 4 — BOOKING SUMMARY
+══════════════════════════════════════════ -->
+<section class="screen-section" id="screen4">
+  <div class="section-header">
+    <p class="section-number">Screen 04</p>
+    <h2>Booking Summary</h2>
+    <p>A chronological timeline of every decision the user made — event, date & time, seats, attendee, and price breakdown — before they confirm payment.</p>
+  </div>
+
+  <div class="wireframe-chrome">
+    <div class="chrome-bar">
+      <div class="chrome-dot r"></div>
+      <div class="chrome-dot y"></div>
+      <div class="chrome-dot g"></div>
+      <div class="chrome-url">itsmyscreen.in/booking/summary</div>
+    </div>
+
+    <div style="background:#f5f5f3;">
+      <div class="s4-nav">
+        <div class="logo-box">[ LOGO ]</div>
+        <div class="s3-title">
+          <div class="sub">Step 3 of 3</div>
+          <div class="main">Booking Summary</div>
+        </div>
+        <div class="btn-filled" style="font-size:11px;padding:5px 14px;">Divy ▾</div>
+      </div>
+
+      <!-- Progress -->
+      <div class="s4-progress">
+        <div class="prog-step"><div class="prog-dot done">✓</div><span class="prog-lbl done">Timing chosen</span></div>
+        <div class="prog-line"></div>
+        <div class="prog-step"><div class="prog-dot done">✓</div><span class="prog-lbl done">Seats selected</span></div>
+        <div class="prog-line"></div>
+        <div class="prog-step"><div class="prog-dot active">3</div><span class="prog-lbl active">Summary</span></div>
+      </div>
+
+      <div class="s4-body">
+        <p class="s4-heading">Your booking at a glance</p>
+        <p class="s4-sub">Review the details below before confirming your order.</p>
+
+        <div class="timeline">
+
+          <!-- 01 Event -->
+          <div class="tl-row">
+            <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+            <div class="tl-content">
+              <p class="tl-step-lbl">01 — Event</p>
+              <p class="tl-step-title">Echoes of the Night — Live Concert</p>
+              <div>
+                <span class="detail-chip-s4">🎸 Music · Indie / Fusion</span>
+                <span class="detail-chip-s4">📍 Palace Grounds, Mysuru</span>
+              </div>
+              <p class="tl-note">[ Event photo thumbnail + short description placeholder ]</p>
+            </div>
+          </div>
+
+          <!-- 02 Date & Time -->
+          <div class="tl-row">
+            <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+            <div class="tl-content">
+              <p class="tl-step-lbl">02 — Date & Time</p>
+              <p class="tl-step-title">Saturday, 12 April 2025</p>
+              <div>
+                <span class="detail-chip-s4">☀️ Afternoon slot</span>
+                <span class="detail-chip-s4">🕔 Show at 4:00 PM</span>
+                <span class="detail-chip-s4">⏱ Duration ~3 hrs</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 03 Seats -->
+          <div class="tl-row">
+            <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+            <div class="tl-content">
+              <p class="tl-step-lbl">03 — Seats</p>
+              <p class="tl-step-title">3 seats selected</p>
+              <div>
+                <span class="seat-badge-s4 sb-vip">VIP A · Row A · Seat 3</span>
+                <span class="seat-badge-s4 sb-prem">Premium · Row C · Seat 6</span>
+                <span class="seat-badge-s4 sb-std">Standard · Row F · Seat 5</span>
+              </div>
+              <p class="tl-note">[ Seat map mini-preview — selected seats highlighted ]</p>
+            </div>
+          </div>
+
+          <!-- 04 Attendee -->
+          <div class="tl-row">
+            <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-connector"></div></div>
+            <div class="tl-content">
+              <p class="tl-step-lbl">04 — Attendee</p>
+              <p class="tl-step-title">Divyamaan Singh</p>
+              <div>
+                <span class="detail-chip-s4">✉ divy@example.com</span>
+                <span class="detail-chip-s4">📱 +91 98XXX XXXXX</span>
+              </div>
+              <p class="tl-note">[ Auto-filled from account. Tap to edit. ]</p>
+            </div>
+          </div>
+
+          <!-- 05 Price -->
+          <div class="tl-row">
+            <div class="tl-line-col"><div class="tl-dot"></div></div>
+            <div class="tl-content" style="padding-bottom:0;">
+              <p class="tl-step-lbl">05 — Price Breakdown</p>
+              <p class="tl-step-title" style="margin-bottom:12px;">Order total</p>
+              <div class="price-table">
+                <div class="pt-row"><span class="pt-label">VIP A · Row A · Seat 3</span><span class="pt-val">₹ 1,999</span></div>
+                <div class="pt-row"><span class="pt-label">Premium · Row C · Seat 6</span><span class="pt-val">₹ 999</span></div>
+                <div class="pt-row"><span class="pt-label">Standard · Row F · Seat 5</span><span class="pt-val">₹ 499</span></div>
+                <div class="pt-row faint"><span class="pt-label">Convenience fee</span><span class="pt-val">₹ 59</span></div>
+                <div class="pt-row total"><span class="pt-label">Total payable</span><span class="pt-val">₹ 3,556</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Action bar -->
+        <div class="s4-action-bar">
+          <div>
+            <div class="s4-total-lbl">Total</div>
+            <div class="s4-total-val">₹ 3,556</div>
+          </div>
+          <div class="s4-btns">
+            <button class="btn-edit">← Edit seats</button>
+            <button class="btn-confirm">Confirm & Pay →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reasoning-box">
+    <p><strong>Design reasoning:</strong> A vertical timeline replaces the conventional summary card — each dot represents one decision the user made, in the order they made it. This mirrors the journey already taken, making review fast and intuitive. Attendee details are auto-filled from the account to reduce friction. The price breakdown is a transparent line-item receipt — surfacing the convenience fee here (not at payment) avoids a dark pattern. "Edit seats" goes back without resetting event or timing, preventing frustration on return.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer class="footer">
+  <p>Divyamaan Singh · UI/UX Assignment · <a href="https://itsmyscreen.in" target="_blank">itsmyscreen.in</a></p>
+  <p style="font-size:11px;">Low-fidelity wireframes — desktop view · All designs remain the intellectual property of the candidate.</p>
+</footer>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 3 JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+const s3Periods = {
+  morning:   ['10:00 AM','11:30 AM','12:00 PM','1:00 PM'],
+  afternoon: ['2:00 PM','3:30 PM','4:00 PM','5:00 PM','5:30 PM'],
+  night:     ['6:00 PM','7:30 PM','8:00 PM','9:00 PM']
+};
+let s3Period = 'afternoon', s3Time = null, s3Seats = new Set();
+const s3Layout = [
+  { row:'VIP A',  type:'vip-s',      booked:[2,6],     price:1999 },
+  { row:'VIP B',  type:'vip-s',      booked:[3,8],     price:1999 },
+  { row:'Prem C', type:'premium-s',  booked:[1,5,9],   price:999  },
+  { row:'Prem D', type:'premium-s',  booked:[0,7],     price:999  },
+  { row:'Std E',  type:'standard-s', booked:[2,4,7],   price:499  },
+  { row:'Std F',  type:'standard-s', booked:[4,5],     price:499  },
+  { row:'Std G',  type:'standard-s', booked:[1,6,9],   price:499  },
+];
+
+function s3SelectPeriod(p) {
+  s3Period = p; s3Time = null; s3Seats.clear();
+  ['morning','afternoon','night'].forEach(x => {
+    document.getElementById('s3-btn-'+x).className = 'period-btn-s3' + (x===p?' active':'');
+  });
+  s3RenderSlots(); s3RenderMap(false); s3UpdateBar();
+}
+
+function s3RenderSlots() {
+  const c = document.getElementById('s3-slots'); c.innerHTML = '';
+  s3Periods[s3Period].forEach(t => {
+    const el = document.createElement('button');
+    el.className = 'slot-chip' + (s3Time===t?' active':'');
+    el.textContent = t;
+    el.onclick = () => { s3Time=t; s3Seats.clear(); s3RenderSlots(); s3RenderMap(true); s3UpdateBar(); };
+    c.appendChild(el);
+  });
+}
+
+function s3RenderMap(show) {
+  const grid = document.getElementById('s3-seatgrid');
+  const guide = document.getElementById('s3-priceguide');
+  grid.innerHTML = ''; guide.innerHTML = '';
+  if (!show) {
+    grid.innerHTML = '<div style="text-align:center;padding:20px;color:#ccc;font-size:12px;">← Select a show time above to view available seats</div>';
+    return;
+  }
+  s3Layout.forEach((rowData, ri) => {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'seat-row-wrap';
+    const lbl = document.createElement('span');
+    lbl.className = 'seat-row-lbl'; lbl.textContent = rowData.row;
+    rowEl.appendChild(lbl);
+    for (let si=0; si<10; si++) {
+      const id = ri+'-'+si;
+      const isBooked = rowData.booked.includes(si);
+      const s = document.createElement('div');
+      s.className = 'seat ' + rowData.type + (isBooked?' booked':'') + (s3Seats.has(id)?' selected':'');
+      s.textContent = isBooked ? '✕' : '';
+      if (!isBooked) s.onclick = () => { s3Seats.has(id)?s3Seats.delete(id):s3Seats.add(id); s3RenderMap(true); s3UpdateBar(); };
+      rowEl.appendChild(s);
+    }
+    grid.appendChild(rowEl);
+  });
+  [['#f0995b','VIP — ₹1,999'],['#7f77dd','Premium — ₹999'],['#bbb','Standard — ₹499']].forEach(([c,l]) => {
+    const el = document.createElement('div');
+    el.className = 'price-item';
+    el.innerHTML = '<div class="price-dot" style="background:'+c+'"></div><span>'+l+'</span>';
+    guide.appendChild(el);
+  });
+}
+
+function s3UpdateBar() {
+  const info = document.getElementById('s3-selected-info');
+  const btn = document.getElementById('s3-proceed-btn');
+  const totD = document.getElementById('s3-total-display');
+  const totA = document.getElementById('s3-total-amt');
+  if (s3Seats.size === 0) {
+    info.textContent = 'No seats selected';
+    btn.className = 'btn-proceed-inactive'; btn.disabled = true;
+    totD.style.display = 'none';
+  } else {
+    const total = Array.from(s3Seats).reduce((sum,id) => sum + s3Layout[parseInt(id.split('-')[0])].price, 0);
+    info.textContent = s3Seats.size + ' seat' + (s3Seats.size>1?'s':'') + ' selected';
+    totA.textContent = '₹' + total.toLocaleString('en-IN');
+    totD.style.display = 'block';
+    btn.className = 'btn-proceed-active'; btn.disabled = false;
+  }
+}
+
+s3RenderSlots(); s3RenderMap(false); s3UpdateBar();
+</script>
+</body>
+</html>
